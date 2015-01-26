@@ -6,7 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by amartinez on 23/01/15.
@@ -20,7 +22,9 @@ public class StorageHelper extends SQLiteOpenHelper implements DataHandler<Strin
     public static String DATABASE_NAME = "activity_db";
     public static int DATABASE_VERSION = 1;
     public static String ACTIVITY_TABLE_NAME = "activity_table";
+    public static String ENTRIES_TABLE_NAME = "entries_table";
     public static String ACTIVITY_TITLE_COLUMN = "title";
+    public static String ACTIVITY_DATE_COLUMN = "date";
 
     public StorageHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -40,10 +44,29 @@ public class StorageHelper extends SQLiteOpenHelper implements DataHandler<Strin
         return storageHelper;
     }
 
+    public Cursor getEntriesCursor () {
+        Cursor c = null;
+        try {
+            String query = "SELECT rowid as _id, " + ACTIVITY_TITLE_COLUMN + " , " + ACTIVITY_DATE_COLUMN + " from " + ENTRIES_TABLE_NAME;
+            c = getWritableDatabase().rawQuery(query, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return c;
+    }
+
     /**
      * Public methods, entry point to this class
      */
 
+    @Override
+    public void addEntryForDate(final String s, final Date date) {
+        ContentValues cv = new ContentValues();
+        cv.put(ACTIVITY_TITLE_COLUMN, s);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        cv.put(ACTIVITY_DATE_COLUMN, dateFormat.format(date));
+        getWritableDatabase().insert(ENTRIES_TABLE_NAME, null,cv);
+    }
 
     @Override
     public void storeNewActivity(final String s) {
@@ -87,6 +110,7 @@ public class StorageHelper extends SQLiteOpenHelper implements DataHandler<Strin
     @Override
     public void onCreate(final SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + ACTIVITY_TABLE_NAME + " (" + ACTIVITY_TITLE_COLUMN + " TEXT);");
+        db.execSQL("CREATE TABLE " + ENTRIES_TABLE_NAME + " (" + ACTIVITY_TITLE_COLUMN + " TEXT, " + ACTIVITY_DATE_COLUMN + " DATE);");
     }
 
     @Override

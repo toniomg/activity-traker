@@ -8,5 +8,8 @@
     <string name="add_activity_dialog_title">Add</string>
     <string name="cancel_activity_dialog_title">Cancel</string>
     <string name="hint_activity_name_dialog">Name</string>
+    <string name="title_activity_acticity_entries">ActicityEntries</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 
 </resources>
