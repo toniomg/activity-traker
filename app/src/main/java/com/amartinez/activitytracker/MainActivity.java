@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity {
 
-    public static ArrayList<String> demoActivities = new ArrayList<>();
+    public static ArrayList<String> userActivities = new ArrayList<>();
     private ArrayAdapter<String> activitiesArrayAdapter;
 
     @Override
@@ -22,19 +22,13 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Fill with test values
-        demoActivities.add("Yoga");
-        demoActivities.add("Guitar");
-        demoActivities.add("Meditation");
-        demoActivities.add("Gym");
+        //Fill the main list view with the stored values
+        //TODO: Move to background thread
+        userActivities = StorageHelper.getInstance(this).getActivityList();
 
-        //Fill the main list view with the given values
         ListView activitiesListView = (ListView) findViewById(R.id.activitiesListView);
-        activitiesArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, demoActivities);
+        activitiesArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, userActivities);
         activitiesListView.setAdapter(activitiesArrayAdapter);
-
-        //Test the DB
-        StorageHelper.getInstance(this).storeNewElement("Test");
     }
 
 
@@ -47,14 +41,14 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.add_activity) {
             addNewActivity();
+            return true;
+        }
+        else if (id == R.id.remove_all) {
+            clearAll();
             return true;
         }
 
@@ -62,9 +56,32 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
-    //Menu selection
+    /**
+     * Add a new activity to the main list
+     */
     private void addNewActivity() {
-            demoActivities.add("Another");
-            activitiesArrayAdapter.notifyDataSetChanged();
+        StorageHelper.getInstance(this).storeNewActivity("TEST");
+        reloadActivities();
+
+    }
+
+
+    /**
+     * Reload the list of activities in the main list
+     */
+    private void reloadActivities() {
+        activitiesArrayAdapter.clear();
+        userActivities = StorageHelper.getInstance(this).getActivityList();
+        activitiesArrayAdapter.addAll(userActivities);
+        activitiesArrayAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Remove all user activities
+     */
+    private void clearAll() {
+        activitiesArrayAdapter.clear();
+        StorageHelper.getInstance(this).removeAllElements();
+        activitiesArrayAdapter.notifyDataSetChanged();
     }
 }

@@ -3,5 +3,6 @@
 
     <string name="app_name">ActivityTracker</string>
     <string name="addActivity">Add Activity</string>
+    <string name="removeAll">Remove All</string>
 
 </resources>

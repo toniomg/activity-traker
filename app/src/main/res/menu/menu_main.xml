@@ -6,4 +6,8 @@
           android:title="@string/addActivity"
           android:orderInCategory="100"
           app:showAsAction="never"/>
+    <item android:id="@+id/remove_all"
+          android:title="@string/removeAll"
+          android:orderInCategory="100"
+          app:showAsAction="never"/>
 </menu>
