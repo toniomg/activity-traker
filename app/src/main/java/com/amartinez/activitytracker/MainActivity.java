@@ -1,13 +1,19 @@
 package com.amartinez.activitytracker;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.amartinez.activitytracker.model.StorageHelper;
+
 
 import java.util.ArrayList;
 
@@ -16,11 +22,14 @@ public class MainActivity extends ActionBarActivity {
 
     public static ArrayList<String> userActivities = new ArrayList<>();
     private ArrayAdapter<String> activitiesArrayAdapter;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        context = this;
 
         //Fill the main list view with the stored values
         //TODO: Move to background thread
@@ -57,12 +66,24 @@ public class MainActivity extends ActionBarActivity {
 
 
     /**
-     * Add a new activity to the main list
+     * Add a new activity to the main list trough a dialog
      */
     private void addNewActivity() {
-        StorageHelper.getInstance(this).storeNewActivity("TEST");
-        reloadActivities();
 
+        final View alertDialogView = this.getLayoutInflater().inflate(R.layout.new_activity_dialog, null);
+
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.new_activity_dialog_title)
+                .setPositiveButton(R.string.add_activity_dialog_title, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        EditText activityNameText = (EditText)alertDialogView.findViewById(R.id.activityName);
+                        StorageHelper.getInstance(context).storeNewActivity(activityNameText.getText().toString());
+                        reloadActivities();
+                    }
+                })
+                .setNegativeButton(R.string.cancel_activity_dialog_title, null)
+                .setView(alertDialogView).create().show();
     }
 
 
