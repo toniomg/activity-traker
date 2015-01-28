@@ -1,7 +1,6 @@
 package com.amartinez.activitytracker;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,23 +10,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.SimpleCursorAdapter;
+
 import java.util.Date;
 
-import com.amartinez.activitytracker.model.StorageHelper;
+import com.amartinez.activitytracker.model.SQLStorageHelper;
 
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 
 public class MainActivity extends ActionBarActivity {
 
     public static ArrayList<String> userActivities = new ArrayList<>();
-    private ArrayAdapter<String> activitiesArrayAdapter;
+    private SimpleCursorAdapter activitiesArrayAdapter;
     private Context context;
 
     @Override
@@ -39,10 +37,16 @@ public class MainActivity extends ActionBarActivity {
 
         //Fill the main list view with the stored values
         //TODO: Move to background thread
-        userActivities = StorageHelper.getInstance(this).getActivityList();
+        userActivities = SQLStorageHelper.getInstance(this).getActivityList();
 
         ListView activitiesListView = (ListView) findViewById(R.id.activitiesListView);
-        activitiesArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, userActivities);
+        //activitiesArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, userActivities);
+        activitiesArrayAdapter = new SimpleCursorAdapter(this,
+                android.R.layout.simple_list_item_1,
+                SQLStorageHelper.getInstance(this).getActivitiesCursor(),
+                new String[]{SQLStorageHelper.ACTIVITY_TITLE_COLUMN},
+                new int[]{android.R.id.text1},
+                0);
         activitiesListView.setAdapter(activitiesArrayAdapter);
         activitiesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -64,9 +68,9 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
-    public void addNewEntry(String title, Date date) {
-
-    }
+//    public void addNewEntry(String title, Date date) {
+//
+//    }
 
 
     @Override
@@ -85,7 +89,7 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
         else if (id == R.id.remove_all) {
-            clearAll();
+//            clearAll();
             return true;
         }
 
@@ -106,7 +110,7 @@ public class MainActivity extends ActionBarActivity {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
                         EditText activityNameText = (EditText)alertDialogView.findViewById(R.id.activityName);
-                        StorageHelper.getInstance(context).storeNewActivity(activityNameText.getText().toString());
+                        SQLStorageHelper.getInstance(context).storeNewActivity(activityNameText.getText().toString());
                         reloadActivities();
                     }
                 })
@@ -115,22 +119,19 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
-    /**
-     * Reload the list of activities in the main list
-     */
+//    /**
+//     * Reload the list of activities in the main list
+//     */
     private void reloadActivities() {
-        activitiesArrayAdapter.clear();
-        userActivities = StorageHelper.getInstance(this).getActivityList();
-        activitiesArrayAdapter.addAll(userActivities);
-        activitiesArrayAdapter.notifyDataSetChanged();
+        activitiesArrayAdapter.changeCursor(SQLStorageHelper.getInstance(this).getActivitiesCursor());
     }
 
-    /**
-     * Remove all user activities
-     */
-    private void clearAll() {
-        activitiesArrayAdapter.clear();
-        StorageHelper.getInstance(this).removeAllElements();
-        activitiesArrayAdapter.notifyDataSetChanged();
-    }
+//    /**
+//     * Remove all user activities
+//     */
+//    private void clearAll() {
+//       // activitiesArrayAdapter.clear();
+//        StorageHelper.getInstance(this).removeAllElements();
+//        activitiesArrayAdapter.notifyDataSetChanged();
+//    }
 }

@@ -16,9 +16,9 @@ import java.util.Date;
  * Using an interface for store and retrieve elements allow the app to change the model without the other activities having to be aware of this.
  * In the future, this storage may be done on the cloud.
  */
-public class StorageHelper extends SQLiteOpenHelper implements DataHandler<String>{
+public class SQLStorageHelper extends SQLiteOpenHelper{
 
-    public static StorageHelper storageHelper;
+    public static SQLStorageHelper storageHelper;
     public static String DATABASE_NAME = "activity_db";
     public static int DATABASE_VERSION = 1;
     public static String ACTIVITY_TABLE_NAME = "activity_table";
@@ -26,7 +26,7 @@ public class StorageHelper extends SQLiteOpenHelper implements DataHandler<Strin
     public static String ACTIVITY_TITLE_COLUMN = "title";
     public static String ACTIVITY_DATE_COLUMN = "date";
 
-    public StorageHelper(Context context) {
+    public SQLStorageHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -36,14 +36,18 @@ public class StorageHelper extends SQLiteOpenHelper implements DataHandler<Strin
      * @param context
      * @return
      */
-    public static StorageHelper getInstance(Context context) {
+    public static SQLStorageHelper getInstance(Context context) {
         if (storageHelper == null) {
-            storageHelper = new StorageHelper(context.getApplicationContext());
+            storageHelper = new SQLStorageHelper(context.getApplicationContext());
         }
 
         return storageHelper;
     }
 
+    /**
+     * Get the cursor linked to the entries of each activity
+     * @return
+     */
     public Cursor getEntriesCursor () {
         Cursor c = null;
         try {
@@ -56,10 +60,24 @@ public class StorageHelper extends SQLiteOpenHelper implements DataHandler<Strin
     }
 
     /**
+     * Get the cursor of the activities
+     * @return
+     */
+    public Cursor getActivitiesCursor () {
+        Cursor c = null;
+        try {
+            String query = "SELECT rowid as _id, " + ACTIVITY_TITLE_COLUMN  + " from " + ACTIVITY_TABLE_NAME;
+            c = getWritableDatabase().rawQuery(query, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return c;
+    }
+
+    /**
      * Public methods, entry point to this class
      */
 
-    @Override
     public void addEntryForDate(final String s, final Date date) {
         ContentValues cv = new ContentValues();
         cv.put(ACTIVITY_TITLE_COLUMN, s);
@@ -68,7 +86,6 @@ public class StorageHelper extends SQLiteOpenHelper implements DataHandler<Strin
         getWritableDatabase().insert(ENTRIES_TABLE_NAME, null,cv);
     }
 
-    @Override
     public void storeNewActivity(final String s) {
         ContentValues cv = new ContentValues();
         cv.put(ACTIVITY_TITLE_COLUMN, s);
@@ -76,7 +93,6 @@ public class StorageHelper extends SQLiteOpenHelper implements DataHandler<Strin
         getWritableDatabase().insert(ACTIVITY_TABLE_NAME, null , cv);
     }
 
-    @Override
     public ArrayList<String> getActivityList() {
 
         ArrayList<String> activitiesList = new ArrayList<>();
@@ -98,7 +114,6 @@ public class StorageHelper extends SQLiteOpenHelper implements DataHandler<Strin
     }
 
 
-    @Override
     public void removeAllElements() {
         getWritableDatabase().delete(ACTIVITY_TABLE_NAME, null, null);
     }
@@ -107,13 +122,11 @@ public class StorageHelper extends SQLiteOpenHelper implements DataHandler<Strin
      * SQL Methods
      */
 
-    @Override
     public void onCreate(final SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + ACTIVITY_TABLE_NAME + " (" + ACTIVITY_TITLE_COLUMN + " TEXT);");
         db.execSQL("CREATE TABLE " + ENTRIES_TABLE_NAME + " (" + ACTIVITY_TITLE_COLUMN + " TEXT, " + ACTIVITY_DATE_COLUMN + " DATE);");
     }
 
-    @Override
     public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
         throw new RuntimeException("Not implemented yet");
     }

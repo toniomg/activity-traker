@@ -7,7 +7,7 @@ import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-import com.amartinez.activitytracker.model.StorageHelper;
+import com.amartinez.activitytracker.model.SQLStorageHelper;
 
 
 public class ActivityEntries extends ActionBarActivity {
@@ -20,8 +20,8 @@ public class ActivityEntries extends ActionBarActivity {
         ListView lv = (ListView) findViewById(R.id.entriesListView);
         lv.setAdapter(new SimpleCursorAdapter(this,
                 android.R.layout.simple_list_item_2,
-                StorageHelper.getInstance(this).getEntriesCursor(),
-                new String[]{StorageHelper.ACTIVITY_TITLE_COLUMN, StorageHelper.ACTIVITY_DATE_COLUMN},
+                SQLStorageHelper.getInstance(this).getEntriesCursor(),
+                new String[]{SQLStorageHelper.ACTIVITY_TITLE_COLUMN, SQLStorageHelper.ACTIVITY_DATE_COLUMN},
                 new int[]{android.R.id.text1, android.R.id.text2},
                 0));
     }
