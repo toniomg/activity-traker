@@ -4,6 +4,7 @@
     <string name="app_name">ActivityTracker</string>
     <string name="addActivity">Add Activity</string>
     <string name="removeAll">Remove All</string>
+    <string name="menu_latest_activities">Latest Activities</string>
     <string name="new_activity_dialog_title">New Activity</string>
     <string name="add_activity_dialog_title">Add</string>
     <string name="cancel_activity_dialog_title">Cancel</string>

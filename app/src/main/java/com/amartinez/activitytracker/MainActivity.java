@@ -1,6 +1,7 @@
 package com.amartinez.activitytracker;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,10 +11,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import com.amartinez.activitytracker.model.SQLStorageHelper;
@@ -51,26 +55,24 @@ public class MainActivity extends ActionBarActivity {
         activitiesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-//                TextView tv = (TextView) view.findViewById(android.R.id.text1);
-//
-//                Calendar calendar = Calendar.getInstance();
-//                new DatePickerDialog(context, null, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
-//
-//                //Add new entry
-//                StorageHelper.getInstance(context).addEntryForDate("TEST", new Date());
+                final TextView activityTitleTextView = (TextView) view.findViewById(android.R.id.text1);
 
-                Intent i = new Intent(context, ActivityEntries.class);
-                context.startActivity(i);
-
+                Calendar calendar = Calendar.getInstance();
+                new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(final DatePicker view, final int year, final int monthOfYear, final int dayOfMonth) {
+                        //Add new entry
+                        //Fixes a bug with date listener called twice
+                        if (view.isShown()){
+                            if (activityTitleTextView != null) {
+                                SQLStorageHelper.getInstance(context).addEntryForDate(activityTitleTextView.getText().toString(), new Date());
+                            }
+                        }
+                    }
+                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
-
     }
-
-
-//    public void addNewEntry(String title, Date date) {
-//
-//    }
 
 
     @Override
@@ -92,6 +94,11 @@ public class MainActivity extends ActionBarActivity {
 //            clearAll();
             return true;
         }
+        else if (id == R.id.show_entries) {
+            Intent i = new Intent(context, ActivityEntries.class);
+            context.startActivity(i);
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -111,19 +118,11 @@ public class MainActivity extends ActionBarActivity {
                     public void onClick(final DialogInterface dialog, final int which) {
                         EditText activityNameText = (EditText)alertDialogView.findViewById(R.id.activityName);
                         SQLStorageHelper.getInstance(context).storeNewActivity(activityNameText.getText().toString());
-                        reloadActivities();
+                        activitiesArrayAdapter.changeCursor(SQLStorageHelper.getInstance(context).getActivitiesCursor());
                     }
                 })
                 .setNegativeButton(R.string.cancel_activity_dialog_title, null)
                 .setView(alertDialogView).create().show();
-    }
-
-
-//    /**
-//     * Reload the list of activities in the main list
-//     */
-    private void reloadActivities() {
-        activitiesArrayAdapter.changeCursor(SQLStorageHelper.getInstance(this).getActivitiesCursor());
     }
 
 //    /**

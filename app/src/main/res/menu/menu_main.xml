@@ -10,4 +10,8 @@
           android:title="@string/removeAll"
           android:orderInCategory="100"
           app:showAsAction="never"/>
+    <item android:id="@+id/show_entries"
+          android:title="@string/menu_latest_activities"
+          android:orderInCategory="100"
+          app:showAsAction="never"/>
 </menu>

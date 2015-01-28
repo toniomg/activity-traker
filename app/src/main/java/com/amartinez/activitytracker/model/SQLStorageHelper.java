@@ -51,7 +51,7 @@ public class SQLStorageHelper extends SQLiteOpenHelper{
     public Cursor getEntriesCursor () {
         Cursor c = null;
         try {
-            String query = "SELECT rowid as _id, " + ACTIVITY_TITLE_COLUMN + " , " + ACTIVITY_DATE_COLUMN + " from " + ENTRIES_TABLE_NAME;
+            String query = "SELECT rowid as _id, " + ACTIVITY_TITLE_COLUMN + " , " + ACTIVITY_DATE_COLUMN + " from " + ENTRIES_TABLE_NAME + " ORDER BY " + ACTIVITY_DATE_COLUMN + " DESC";
             c = getWritableDatabase().rawQuery(query, null);
         } catch (Exception e) {
             e.printStackTrace();
