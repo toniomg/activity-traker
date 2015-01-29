@@ -26,7 +26,7 @@ import com.amartinez.activitytracker.model.SQLStorageHelper;
 import java.util.ArrayList;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements ActivityListFragment.OnFragmentInteractionListener{
 
     public static ArrayList<String> userActivities = new ArrayList<>();
     private SimpleCursorAdapter activitiesArrayAdapter;
@@ -38,40 +38,6 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         context = this;
-
-        //Fill the main list view with the stored values
-        //TODO: Move to background thread
-        userActivities = SQLStorageHelper.getInstance(this).getActivityList();
-
-        ListView activitiesListView = (ListView) findViewById(R.id.activitiesListView);
-        //activitiesArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, userActivities);
-        activitiesArrayAdapter = new SimpleCursorAdapter(this,
-                android.R.layout.simple_list_item_1,
-                SQLStorageHelper.getInstance(this).getActivitiesCursor(),
-                new String[]{SQLStorageHelper.ACTIVITY_TITLE_COLUMN},
-                new int[]{android.R.id.text1},
-                0);
-        activitiesListView.setAdapter(activitiesArrayAdapter);
-        activitiesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-                final TextView activityTitleTextView = (TextView) view.findViewById(android.R.id.text1);
-
-                Calendar calendar = Calendar.getInstance();
-                new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(final DatePicker view, final int year, final int monthOfYear, final int dayOfMonth) {
-                        //Add new entry
-                        //Fixes a bug with date listener called twice
-                        if (view.isShown()){
-                            if (activityTitleTextView != null) {
-                                SQLStorageHelper.getInstance(context).addEntryForDate(activityTitleTextView.getText().toString(), new Date());
-                            }
-                        }
-                    }
-                }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
-            }
-        });
     }
 
 
@@ -123,6 +89,11 @@ public class MainActivity extends ActionBarActivity {
                 })
                 .setNegativeButton(R.string.cancel_activity_dialog_title, null)
                 .setView(alertDialogView).create().show();
+    }
+
+    @Override
+    public void onFragmentInteraction(final String id) {
+
     }
 
 //    /**
